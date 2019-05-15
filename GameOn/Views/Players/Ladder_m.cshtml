@@ -1,0 +1,51 @@
+﻿@model IList<GameOn.Web.Models.PlayerMatchesSummary>
+@{
+    Layout = "../Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    <h1>Ladder @DateTime.Now.ToShortDateString() </h1>    
+    <partial name="_Menu" />
+</div>
+
+<div data-role="content">
+    <style type="text/css">
+        .summary {
+            width:100%;	
+        }
+        .summary th, .summary td {
+        	text-align: center;
+        }
+    </style>
+        
+    <ul data-role="listview" data-inset="true">
+        @{
+            int rankNumber = 0;
+            foreach (var summary in Model.Where(s=>s.Played > 0))
+            {
+                rankNumber++;
+                var player = summary.Player;
+
+                <li data-role="list-divider"><a href="/Matches/?playerid=@player.Id">#@rankNumber @player.Name <small>(@player.CurrentRank)</small> <span class="sparkline" data-playerid="@player.Id"></span></a></li>
+                <li>
+                    <table class="summary">
+                        <tr>
+                            <th>Played</th>
+                            <th>Won</th>
+                            <th>Lost</th>
+                            <th>Low - High Rank</th>
+                        </tr>
+                        <tr>
+                            <td>@summary.Played</td>
+                            <td>@summary.Won</td>
+                            <td>@summary.Lost</td>
+                            <td>@summary.LowestRanking - @summary.HighestRanking</td>
+                        </tr>
+                    </table>
+                </li>
+            }
+        }
+    </ul>
+    <a href="/Players/GetPlayersCsv/" target="_blank" data-role="button">Export Players as CSV</a>
+</div>
+

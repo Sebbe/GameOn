@@ -1,0 +1,28 @@
+﻿@model List<Tuple<DateTime, string>>
+@{
+    Layout = "../Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    <h1>Game on!</h1>
+    <partial name="_Menu"/>
+</div>
+
+<div data-role="content">	
+    <ul data-role="listview" data-inset="true">
+        @foreach (var message in Model)
+        {
+            <li data-role="list-divider">@message.Item1</li>
+            <li>@message.Item2</li>
+        }
+    </ul>
+    
+    <p>
+        <em>
+            Check the ladder, challenge a player, then click Play!
+        </em>
+    </p>
+
+    <a href="/Matches/New" data-role="button" data-icon="search">Play!</a>
+
+</div>

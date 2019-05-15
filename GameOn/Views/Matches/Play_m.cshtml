@@ -1,0 +1,83 @@
+﻿@model GameOn.Web.Models.PlayModel
+@{
+    Layout = "~/Views/Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    <h1>@Model.Player1.Name vs @Model.Player2.Name</h1>
+    <partial name="_Menu"/>
+</div>
+
+<div data-role="content">
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#PlayForm").validate();
+        });
+    </script>    
+    
+    <form id="PlayForm" action="/Matches/Played" method="POST">
+        <input type="hidden" name="Player1" value="@Model.Player1.Id" />
+        <input type="hidden" name="Player2" value="@Model.Player2.Id" />
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    @Model.Player1.Name <small>(@Model.Player1.CurrentRank)</small>
+                </div>
+                <div class="col-6">
+                    @Model.Player2.Name <small>(@Model.Player2.CurrentRank)</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    Set 1
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label for="Sets[0].PlayerOneScore">Player one score</label>
+                    <input type="text" id="Sets[0].PlayerOneScore" name="Sets[0].PlayerOneScore" placeholder="" />
+                </div>
+                <div class="col-6">
+                    <label for="Sets[0].PlayerTwoScore">Player two score</label>
+                    <input type="text" id="Sets[0].PlayerTwoScore" name="Sets[0].PlayerTwoScore" placeholder="" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    Set 2
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label for="Sets[1].PlayerOneScore">Player one score</label>
+                    <input type="text" id="Sets[1].PlayerOneScore" name="Sets[1].PlayerOneScore" placeholder="" />
+                </div>
+                <div class="col-6">
+                    <label for="Sets[1].PlayerTwoScore">Player two score</label>
+                    <input type="text" id="Sets[1].PlayerTwoScore" name="Sets[1].PlayerTwoScore" placeholder="" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    Set 3
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <label for="Sets[2].PlayerOneScore">Player one score</label>
+                    <input type="text" id="Sets[2].PlayerOneScore" name="Sets[2].PlayerOneScore" placeholder="" />
+                </div>
+                <div class="col-6">
+                    <label for="Sets[2].PlayerTwoScore">Player two score</label>
+                    <input type="text" id="Sets[2].PlayerTwoScore" name="Sets[2].PlayerTwoScore" placeholder="" />
+                </div>
+            </div>
+        </div>
+
+        <button>Done</button>
+    </form>
+</div><!-- /content -->
+

@@ -1,0 +1,63 @@
+﻿@model GameOn.Web.Models.PlayerMatchListModel 
+@{
+    Layout = "../Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    <h1>Matches</h1>
+    <partial name="_Menu" />
+</div>
+
+<div data-role="content">
+    <style type="text/css">
+        .summary {
+            width:100%;	
+        }
+        .summary th, .summary td {
+        	text-align: center;
+        }
+    </style>
+
+    @{
+        var summary = Model.PlayerMatchesSummary;
+    }
+    
+    @if (summary != null)
+    {
+        <ul data-role="listview" data-inset="true">
+            <li data-role="list-divider"><h3>@summary.Player.FullName <small>(@summary.Player.CurrentRank)</small> <span class="sparkline" data-playerid="@summary.Player.Id"></span></h3></li>
+            <li>
+                <table class="summary">
+                    <tr>
+                        <th>Played</th>
+                        <th>Won</th>
+                        <th>Lost</th>
+                        <th>Low - High Rank</th>
+                    </tr>
+                    <tr>
+                        <td>@summary.Played</td>
+                        <td>@summary.Won</td>
+                        <td>@summary.Lost</td>
+                        <td>@summary.LowestRanking - @summary.HighestRanking</td>
+                    </tr>
+                </table>
+            </li>
+        </ul>
+    }
+    
+    <ul data-role="listview" data-inset="true">
+        @foreach (var match in Model.Matches)
+        {
+            <li data-role="list-divider">@match.Date</li>
+            <li>
+                <h4>@match.Name</h4>
+                <p>@match.WinnerPlayer.Name beat @match.LoserPlayer.Name @match.FinishScore</p>
+            </li>
+        }
+    </ul>
+    
+    <p>
+        <em>A maximum of 100 recent matches are shown here</em>
+    </p>
+</div>
+

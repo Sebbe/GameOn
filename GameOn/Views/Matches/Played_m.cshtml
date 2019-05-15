@@ -1,0 +1,29 @@
+﻿@model GameOn.Web.Entities.Match
+@{
+    Layout = "~/Views/Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    <h1>@Model.Name</h1>
+	<div data-role="navbar">
+		<ul>
+			<li><a href="/" data-icon="home">Home</a></li>
+			<li><a href="/Matches/New" data-icon="search">Play!</a></li>
+            <li><a href="/Players/Ladder" data-icon="info">Ladder</a></li>
+            <li><a href="/Matches/" data-icon="info">Matches</a></li>
+		</ul>
+	</div><!-- /navbar -->
+</div>
+
+<div data-role="content">	
+
+    <h2>Congratulations @Model.WinnerPlayer.Name!</h2>
+    Your rating is now @Model.WinnerPlayer.CurrentRank
+
+    <h2>Bad luck @Model.LoserPlayer.Name</h2>
+    Your rating is now @Model.LoserPlayer.CurrentRank
+    
+    <a data-role="button"  data-ajax="false" href="/">Finished</a>
+
+</div>
+

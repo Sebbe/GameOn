@@ -1,0 +1,50 @@
+﻿@model List<GameOn.Web.Entities.Player>
+@{
+    Layout = "~/Views/Shared/_Layout_m.cshtml";
+}
+
+<div data-role="header">
+    @if (ViewBag.Player1 == null)
+    {
+        <h1>Player 1</h1>    
+    }
+    else
+    {
+        var player = Model.First(p => p.Id == ViewBag.Player1);
+        
+        <h1>@player.Name <small>(@player.CurrentRank)</small> vs</h1>
+    }
+    <partial name="_Menu"/>
+</div>
+
+<div data-role="content">	
+    <ol data-role="listview" data-inset="true" data-filter="true">
+        @foreach (var player in Model)
+        {
+            if (ViewBag.Player1 == null)
+            {
+                <li><a href="/Matches/New?player1=@player.Id" data-transition="slide">@player.Name <small>(@player.CurrentRank)</small></a></li>     
+            }
+            else
+            {
+                if (player.Id != ViewBag.Player1)
+                {
+                    <li><a href="/Matches/Play?player1=@ViewBag.Player1&player2=@player.Id" data-transition="slide">@player.Name <small>(@player.CurrentRank)</small></a></li>
+                }
+            }
+        }
+    </ol>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#NewPlayerForm").validate();
+        });
+    </script>    
+
+    <form id="NewPlayerForm" asp-action="New" asp-controller="Matches" method="POST" data-transformation="slide">
+        <input type="hidden" name="Player1" value="@ViewBag.Player1"/>
+        <input name="PlayerName" placeholder="New player" class="required" /><button>Go</button>  
+    </form>
+
+</div>
+
