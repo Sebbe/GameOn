@@ -35,11 +35,11 @@ namespace GameOn.Web.Services
         /// <summary>
         /// Returns a page of pool matches for a player
         /// </summary>
-        /// <param name="playerId">The player ID</param>
+        /// <param name="teamId">The player ID</param>
         /// <param name="args">A dynamic object of Arguments. PageSize = The size of the page to return. If missing, will return all items</param>
-        public async Task<IList<Match>> GetMatches(int playerId, dynamic args)
+        public async Task<IList<Match>> GetMatches(int teamId, dynamic args)
         {
-            var query = BasicMatchQuery().Where(m => m.Finished && (m.PlayerOneId == playerId || m.PlayerTwoId == playerId));
+            var query = BasicMatchQuery().Where(m => m.Finished && (m.TeamOneId == teamId || m.PlayerTwoId == teamId));
 
             if (args.PageSize != null)
             {
@@ -52,10 +52,10 @@ namespace GameOn.Web.Services
         private IQueryable<Match> BasicMatchQuery()
         {
             return _gameOnContext.Matches
-                                 .Include(x => x.WinnerPlayer)
-                                 .Include(x => x.LoserPlayer)
-                                 .Include(x => x.PlayerOne)
-                                 .Include(x => x.PlayerTwo)
+                                 .Include(x => x.WinnerTeam)
+                                 .Include(x => x.LoserTeam)
+                                 .Include(x => x.TeamOne)
+                                 .Include(x => x.TeamTwo)
                                  .Where(m => m.Finished);
         }
     }

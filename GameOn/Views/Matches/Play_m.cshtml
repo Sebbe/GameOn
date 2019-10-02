@@ -4,7 +4,7 @@
 }
 
 <div data-role="header">
-    <h1>@Model.Player1.Name vs @Model.Player2.Name</h1>
+    <h1>@Model.Team1.Name vs @Model.Team2.Name</h1>
     <partial name="_Menu"/>
 </div>
 
@@ -17,16 +17,16 @@
     </script>    
     
     <form id="PlayForm" action="/Matches/Played" method="POST">
-        <input type="hidden" name="Player1" value="@Model.Player1.Id" />
-        <input type="hidden" name="Player2" value="@Model.Player2.Id" />
+        <input type="hidden" name="Team1" value="@Model.Team1.Id" />
+        <input type="hidden" name="Team2" value="@Model.Team2.Id" />
         
         <div class="container">
             <div class="row">
                 <div class="col-6">
-                    @Model.Player1.Name <small>(@Model.Player1.CurrentRank)</small>
+                    @Model.Team1.Name <small>(@Model.Team1.CurrentRank)</small>
                 </div>
                 <div class="col-6">
-                    @Model.Player2.Name <small>(@Model.Player2.CurrentRank)</small>
+                    @Model.Team2.Name <small>(@Model.Team2.CurrentRank)</small>
                 </div>
             </div>
             <div class="row">

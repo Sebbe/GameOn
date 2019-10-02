@@ -11,11 +11,11 @@ namespace GameOn.Web.Services
     /// <summary>
     /// A read-only service for retrieving players
     /// </summary>
-    public class PlayerService : IPlayerService
+    public class TeamService : ITeamService
     {
         private readonly GameOnContext _gameOnContext;
 
-        public PlayerService(GameOnContext gameOnContext)
+        public TeamService(GameOnContext gameOnContext)
         {
             _gameOnContext = gameOnContext;
         }
@@ -25,67 +25,68 @@ namespace GameOn.Web.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<Player> GetPlayer(int id)
+        public Task<Team> GetTeam(int id)
         {
-            return _gameOnContext.Players.FirstOrDefaultAsync(p => p.Id == id);
+            return _gameOnContext.Teams.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>
         /// Returns a ranked list of players, sorted by their ELO rating.
         /// </summary>
         /// <returns></returns>
-        public async Task<IList<Player>> GetPlayersByRank()
+        public async Task<IList<Team>> GetTeamsByRank(bool isDouble = false)
         {
-            return await _gameOnContext.Players.OrderByDescending(p => p.CurrentRank).ToListAsync();
+            return await _gameOnContext.Teams.Where(x => x.IsDouble == isDouble).OrderByDescending(p => p.CurrentRank).ToListAsync();
         }
 
-        public Task<Player> GetTopRankingPlayer()
+        public Task<Team> GetTopRankingTeam(bool isDouble = false)
         {
-            return _gameOnContext.Players.OrderByDescending(p => p.CurrentRank).FirstOrDefaultAsync();
+            return _gameOnContext.Teams.Where(x => x.IsDouble == isDouble).OrderByDescending(p => p.CurrentRank).FirstOrDefaultAsync();
         }
 
-        private IQueryable<PlayerMatchesSummary> GetPlayerMatchesSummaryQuery()
+        private IQueryable<TeamMatchesSummary> GetTeamMatchesSummaryQuery(bool isDouble = false)
         {
-            var query = from p in _gameOnContext.Players
+            var query = from p in _gameOnContext.Teams
+                        where p.IsDouble == isDouble
                         select
-                            new PlayerMatchesSummary
+                            new TeamMatchesSummary
                             {
-                                Player = p,
+                                Team = p,
                                 HighestRanking = p.RankHistory.Max(rh => (int?)rh.Rank),
                                 LowestRanking = p.RankHistory.Min(rh => (int?)rh.Rank),
-                                Won = p.MatchesAsPlayerOne.Count(y => y.WinnerPlayerId == p.Id) + p.MatchesAsPlayerTwo.Count(y => y.WinnerPlayerId == p.Id),
-                                Played = p.MatchesAsPlayerOne.Count + p.MatchesAsPlayerTwo.Count
+                                Won = p.MatchesAsTeamOne.Count(y => y.WinnerTeamId == p.Id) + p.MatchesAsTeamTwo.Count(y => y.WinnerTeamId == p.Id),
+                                Played = p.MatchesAsTeamOne.Count + p.MatchesAsTeamTwo.Count
                             };
             return query;
         }
 
         /// <summary>
-        /// Gets a summary of all of the matches that a Player has played
+        /// Gets a summary of all of the matches that a team has played
         /// </summary>
-        public async Task<PlayerMatchesSummary> GetPlayerMatchesSummary(int playerId)
+        public async Task<TeamMatchesSummary> GetTeamMatchesSummary(int teamId)
         {
-            var query = GetPlayerMatchesSummaryQuery();
-            return await query.FirstOrDefaultAsync(p => p.Player.Id == playerId);
+            var query = GetTeamMatchesSummaryQuery();
+            return await query.FirstOrDefaultAsync(p => p.Team.Id == teamId);
         }
 
         /// <summary>
         /// Gets a list of players and summaries of all of the matches each Player has played, sorted by rank
         /// </summary>
-        public async Task<IList<PlayerMatchesSummary>> GetListOfPlayersWithMatchSummaries()
+        public async Task<IList<TeamMatchesSummary>> GetListOfTeamsWithMatchSummaries(bool isDouble = false)
         {
-            var query = GetPlayerMatchesSummaryQuery();
-            return await query.OrderByDescending(p=>p.Player.CurrentRank).ToListAsync();
+            var query = GetTeamMatchesSummaryQuery(isDouble);
+            return await query.OrderByDescending(p=>p.Team.CurrentRank).ToListAsync();
         }
 
         /// <summary>
         /// Gets a list of player IDs and comma-separated Rank data for drawing players' sparklines
         /// </summary>
-        /// <returns>A list of tuples, each a player ID as int, and a list of Ranks as a comma-separated string</returns>
-        public IList<Tuple<int, string>> GetRankHistoryDataForSparkLine()
+        /// <returns>A list of tuples, each a team ID as int, and a list of Ranks as a comma-separated string</returns>
+        public IList<Tuple<int, string>> GetRankHistoryDataForSparkLine(bool isDouble = false)
         {
             var query = from h in _gameOnContext.RankHistory 
-                        orderby h.PlayerId, h.Id
-                        select new {h.PlayerId, h.Rank};
+                        orderby h.TeamId, h.Id
+                        select new {h.TeamId, h.Rank};
 
             var results = new List<Tuple<int, string>>();
 
@@ -94,7 +95,7 @@ namespace GameOn.Web.Services
             bool first = true;
             foreach (var history in query)
             {
-                if (lastPlayerId != 0 && lastPlayerId != history.PlayerId)
+                if (lastPlayerId != 0 && lastPlayerId != history.TeamId)
                 {
                     var result = new Tuple<int, string>(lastPlayerId, data);
                     results.Add(result);
@@ -108,7 +109,7 @@ namespace GameOn.Web.Services
                 }
                 
                 data += history.Rank;
-                lastPlayerId = history.PlayerId;
+                lastPlayerId = history.TeamId;
                 first = false;
             }
 

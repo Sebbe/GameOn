@@ -6,48 +6,48 @@ using GameOn.Web.Models;
 
 namespace GameOn.Web.Services
 {
-    public interface IPlayerService
+    public interface ITeamService
     {
         /// <summary>
-        /// Gets a single player by ID
+        /// Gets a single team by ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<Player> GetPlayer(int id);
+        Task<Team> GetTeam(int id);
 
         /// <summary>
         /// Returns a ranked list of players, sorted by their ELO rating.
         /// </summary>
         /// <returns></returns>
-        Task<IList<Player>> GetPlayersByRank();
+        Task<IList<Team>> GetTeamsByRank(bool isDouble = false);
 
         /// <summary>
-        /// Gets the top ranking player, mon
+        /// Gets the top ranking team, mon
         /// </summary>
-        Task<Player> GetTopRankingPlayer();
+        Task<Team> GetTopRankingTeam(bool isDouble = false);
 
         /// <summary>
         /// Gets a summary of all of the matches that a Player has played
         /// </summary>
-        Task<PlayerMatchesSummary> GetPlayerMatchesSummary(int playerId);
+        Task<TeamMatchesSummary> GetTeamMatchesSummary(int teamId);
 
         /// <summary>
         /// Gets a list of players and summaries of all of the matches each Player has played
         /// </summary>
-        Task<IList<PlayerMatchesSummary>> GetListOfPlayersWithMatchSummaries();
+        Task<IList<TeamMatchesSummary>> GetListOfTeamsWithMatchSummaries(bool isDouble = false);
 
         /// <summary>
         /// Gets a list of player IDs and comma-separated Rank data for drawing players' sparklines
         /// </summary>
         /// <returns>A list of tuples, each a player ID as int, and a list of Ranks as a comma-separated string</returns>
-        IList<Tuple<int, string>> GetRankHistoryDataForSparkLine();
+        IList<Tuple<int, string>> GetRankHistoryDataForSparkLine(bool isDouble = false);
 
         /// <summary>
         /// Gets a player ID and comma-separated Rank data for drawing a player's sparkline
         /// </summary>
-        /// <param name="playerId">A player ID. Returns a </param>
+        /// <param name="teamId">A team ID. Returns a </param>
         /// <returns>A tuple: a player ID as int, and a list of Ranks as a comma-separated string</returns>
-        Tuple<int, string> GetRankHistoryDataForSparkLine(int playerId);
+        Tuple<int, string> GetRankHistoryDataForSparkLine(int teamId);
 
     }
 }

@@ -11,7 +11,7 @@ namespace GameOn.Web.Services
         /// <summary>
         /// Saves a ranking history record for a player
         /// </summary>
-        Task SaveRankHistory(Player player);
+        Task SaveRankHistory(Team team);
     }
 
 

@@ -16,15 +16,15 @@ namespace GameOn.Web.Controllers
     {
         private readonly GameOnContext _gameOnContext;
         private readonly IMatchResultEntryService _matchResultEntryService;
-        private readonly IPlayerService _playerService;
+        private readonly ITeamService _teamService;
         private readonly IMatchService _matchService;
         private readonly IPlayerRegistrationService _playerRegistrationService;
 
-        public MatchesController(GameOnContext gameOnContext, IMatchResultEntryService matchResultEntryService, IPlayerService playerService, IMatchService matchService, IPlayerRegistrationService playerRegistrationService)
+        public MatchesController(GameOnContext gameOnContext, IMatchResultEntryService matchResultEntryService, ITeamService teamService, IMatchService matchService, IPlayerRegistrationService playerRegistrationService)
         {
             _gameOnContext = gameOnContext;
             _matchResultEntryService = matchResultEntryService;
-            _playerService = playerService;
+            _teamService = teamService;
             _matchService = matchService;
             _playerRegistrationService = playerRegistrationService;
         }
@@ -33,15 +33,15 @@ namespace GameOn.Web.Controllers
         /// Gets a list of the last 100 matches played, optionally for a given player's ID
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Index(int? playerId)
+        public async Task<IActionResult> Index(int? teamId)
         {
-            var model = new PlayerMatchListModel();
+            var model = new TeamMatchListModel();
 
-            if (playerId.HasValue)
+            if (teamId.HasValue)
             {
-                model.Matches = await _matchService.GetMatches(playerId.Value, new { PageSize = 100 });
-                model.Player = await _playerService.GetPlayer(playerId.Value);
-                model.PlayerMatchesSummary = await _playerService.GetPlayerMatchesSummary(playerId.Value);
+                model.Matches = await _matchService.GetMatches(teamId.Value, new { PageSize = 100 });
+                model.Team = await _teamService.GetTeam(teamId.Value);
+                model.MatchesSummary = await _teamService.GetTeamMatchesSummary(teamId.Value);
                 ViewData.Model = model;
                 return View("Index_m");                
             }
@@ -52,35 +52,35 @@ namespace GameOn.Web.Controllers
         }
 
         /// <summary>
-        /// Returns a view that prompts to Start a new Game. When no player1 ID is provided, prompts for Player 1. When a player1 ID is provided, prompts for player 2
+        /// Returns a view that prompts to Start a new Game. When no team1 ID is provided, prompts for Player 1. When a team1 ID is provided, prompts for team 2
         /// </summary>
-        /// <param name="player1"></param>
+        /// <param name="team1"></param>
         /// <returns></returns>
         [HttpGet]
         //[ResponseCache(Duration = 0, NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> New(int? player1)
+        public async Task<IActionResult> New(int? team1)
         {
-            ViewBag.Player1 = player1;
-            ViewData.Model = await _playerService.GetPlayersByRank();
+            ViewBag.Team1 = team1;
+            ViewData.Model = await _teamService.GetTeamsByRank();
             return View("New_m");
         }
 
         /// <summary>
-        /// Starts a new game and creates a player at the same time. If player1 is not provided, the playerName will be used to create a new player, who will be player 1 for this match, and
-        /// the action will redirect to prompt for player 2. If player1 is provided, playerName will be used to create a new player who will be player 2 for this match, and the action will
+        /// Starts a new game and creates a team at the same time. If team1 is not provided, the playerName will be used to create a new player, who will be player 1 for this match, and
+        /// the action will redirect to prompt for team 2. If team1 is provided, playerName will be used to create a new player who will be team 2 for this match, and the action will
         /// redirect to the Play action.
         /// </summary>
-        /// <param name="player1">Optional. Player 1's ID</param>
+        /// <param name="team1">Optional. Player 1's ID</param>
         /// <param name="playerName">Required. A Player name.</param>
         /// <returns>Returns the result of either the New or Play action.</returns>
         [HttpPost]
-        public async Task<IActionResult> New(int? player1, string playerName)
+        public async Task<IActionResult> New(int? team1, string playerName)
         {
-            if (string.IsNullOrWhiteSpace(playerName)) throw new ArgumentNullException("playerName");
+            if (string.IsNullOrWhiteSpace(playerName)) throw new ArgumentNullException(nameof(playerName));
 
-            int playerId = await _playerRegistrationService.AddPlayer(new Player {Name = playerName, FullName = playerName, Email = playerName, CurrentRank = 1000});
+            int playerId = await _playerRegistrationService.AddPlayer(new Player {Name = playerName, FullName = playerName, Email = playerName});
 
-            if (player1.HasValue) return await Play(player1.Value, playerId);
+            if (team1.HasValue) return await Play(team1.Value, playerId);
             return await New(playerId);
         }
 
@@ -89,11 +89,11 @@ namespace GameOn.Web.Controllers
         /// </summary>
         [HttpGet]
         //[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new []{"player1","player2"})]
-        public async Task<IActionResult> Play(int player1, int player2)
+        public async Task<IActionResult> Play(int team1, int team2)
         {
             var model = new PlayModel();
-            model.Player1 = await _playerService.GetPlayer(player1);
-            model.Player2 = await _playerService.GetPlayer(player2);
+            model.Team1 = await _teamService.GetTeam(team1);
+            model.Team2 = await _teamService.GetTeam(team2);
             ViewData.Model = model;
             return View("Play_m");
         }

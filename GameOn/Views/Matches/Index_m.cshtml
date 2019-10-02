@@ -1,4 +1,4 @@
-﻿@model GameOn.Web.Models.PlayerMatchListModel 
+﻿@model GameOn.Web.Models.TeamMatchListModel 
 @{
     Layout = "../Shared/_Layout_m.cshtml";
 }
@@ -19,13 +19,13 @@
     </style>
 
     @{
-        var summary = Model.PlayerMatchesSummary;
+        var summary = Model.MatchesSummary;
     }
     
     @if (summary != null)
     {
         <ul data-role="listview" data-inset="true">
-            <li data-role="list-divider"><h3>@summary.Player.FullName <small>(@summary.Player.CurrentRank)</small> <span class="sparkline" data-playerid="@summary.Player.Id"></span></h3></li>
+            <li data-role="list-divider"><h3>@summary.Team.Name <small>(@summary.Team.CurrentRank)</small> <span class="sparkline" data-playerid="@summary.Team.Id"></span></h3></li>
             <li>
                 <table class="summary">
                     <tr>
@@ -51,7 +51,7 @@
             <li data-role="list-divider">@match.Date</li>
             <li>
                 <h4>@match.Name</h4>
-                <p>@match.WinnerPlayer.Name beat @match.LoserPlayer.Name @match.FinishScore</p>
+                <p>@match.WinnerTeam.Name beat @match.LoserTeam.Name @match.FinishScore</p>
             </li>
         }
     </ul>

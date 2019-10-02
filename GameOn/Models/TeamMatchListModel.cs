@@ -6,17 +6,17 @@ namespace GameOn.Web.Models
     /// <summary>
     /// Model to represent the list of matches that a Player has played
     /// </summary>
-    public class PlayerMatchListModel
+    public class TeamMatchListModel
     {
         /// <summary>
-        /// The Player for these matches
+        /// The Team for these matches
         /// </summary>
-        public Player Player { get; set; }
+        public Team Team { get; set; }
 
         /// <summary>
         /// A summary of match statistics for this.Player
         /// </summary>
-        public PlayerMatchesSummary PlayerMatchesSummary { get; set; }
+        public TeamMatchesSummary MatchesSummary { get; set; }
 
         /// <summary>
         /// A list of Matches played by this.Player

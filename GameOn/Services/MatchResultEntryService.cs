@@ -17,15 +17,15 @@ namespace GameOn.Web.Services
         private const string PlayerVPlayerNameFormat = "{0} v {1}";
         private readonly IRatingHelper _ratingHelper;
         private readonly IRankHistoryLoggingService _rankHistoryLoggingService;
-        private readonly IPlayerService _playerService;
+        private readonly ITeamService _teamService;
         private readonly ITimelineService _timelineService;
         private readonly GameOnContext _gameOnContext;
 
-        public MatchResultEntryService(IRatingHelper ratingHelper, IRankHistoryLoggingService rankHistoryLoggingService, IPlayerService playerService, ITimelineService timelineService, GameOnContext gameOnContext)
+        public MatchResultEntryService(IRatingHelper ratingHelper, IRankHistoryLoggingService rankHistoryLoggingService, ITeamService teamService, ITimelineService timelineService, GameOnContext gameOnContext)
         {
             _ratingHelper = ratingHelper;
             _rankHistoryLoggingService = rankHistoryLoggingService;
-            _playerService = playerService;
+            _teamService = teamService;
             _timelineService = timelineService;
             _gameOnContext = gameOnContext;
         }
@@ -44,41 +44,40 @@ namespace GameOn.Web.Services
         ///   Adds a Match, returning the match ID
         /// </summary>
         /// <param name = "playedDate">The date the match was played</param>
-        /// <param name = "player1Id">Player 1's ID</param>
-        /// <param name = "player2Id">Player 2's ID</param>
-        /// <param name="winnerId">The winning player's ID</param>
-        /// <param name="score">The score of the match, expressed as a string. e.g. 10-3, 3-10, 10-12</param>
+        /// <param name = "team1Id">Player 1's ID</param>
+        /// <param name = "team2Id">Player 2's ID</param>
+        /// <param name="sets">Sets played</param>
         /// <returns>The new Match ID</returns>
-        private async Task<Match> AddMatch(DateTime playedDate, int player1Id, int player2Id, IList<MatchSet> sets)
+        private async Task<Match> AddMatch(DateTime playedDate, int team1Id, int team2Id, IEnumerable<MatchSet> sets)
         {
             var finishedSets = sets.Where(x => x.PlayerOneScore != x.PlayerTwoScore).ToList();
 
             var match = new Match
                             {
                                 Date = playedDate,
-                                PlayerOne = _gameOnContext.Players.FirstOrDefault(p => p.Id == player1Id),
-                                PlayerTwo = _gameOnContext.Players.FirstOrDefault(p => p.Id == player2Id),
+                                TeamOne = _gameOnContext.Teams.FirstOrDefault(p => p.Id == team1Id),
+                                TeamTwo = _gameOnContext.Teams.FirstOrDefault(p => p.Id == team2Id),
                                 Finished = true,
                                 Sets = finishedSets
             };
 
-            if (match.PlayerOne == null) throw new ArgumentException("Player 1 ID is not valid", "player1Id");
-            if (match.PlayerTwo == null) throw new ArgumentException("Player 2 ID is not valid", "player2Id");
-            if (match.PlayerOne == match.PlayerTwo) throw new ArgumentException("Players 1 and 2 may not be the same");
+            if (match.TeamOne == null) throw new ArgumentException("Teams 1 ID is not valid", "team1Id");
+            if (match.TeamTwo == null) throw new ArgumentException("Teams 2 ID is not valid", "team2Id");
+            if (match.TeamOne == match.TeamTwo) throw new ArgumentException("Teams 1 and 2 may not be the same");
 
-            match.Name = string.Format(PlayerVPlayerNameFormat, match.PlayerOne.Name, match.PlayerTwo.Name);
+            match.Name = string.Format(PlayerVPlayerNameFormat, match.TeamOne.Name, match.TeamTwo.Name);
 
             // TODO Check match Type and check if the match is finished, or is that up to controller or maybe the frontend. No idea?
             var totalSetPlayerOneWins = finishedSets.Count(x => x.PlayerOneScore > x.PlayerTwoScore);
             var totalSetPlayerTwoWins = finishedSets.Count(x => x.PlayerTwoScore > x.PlayerOneScore);
-            match.WinnerPlayerId = totalSetPlayerOneWins > totalSetPlayerTwoWins ? player1Id : player2Id;
-            match.LoserPlayerId = match.WinnerPlayerId == player1Id ? player2Id : player1Id;
+            match.WinnerTeamId = totalSetPlayerOneWins > totalSetPlayerTwoWins ? team1Id : team2Id;
+            match.LoserTeamId = match.WinnerTeamId == team1Id ? team2Id : team1Id;
 
             string resultString = string.Empty;
 
             foreach (MatchSet matchSet in finishedSets)
             {
-                if (match.WinnerPlayerId == player1Id)
+                if (match.WinnerTeamId == team1Id)
                 {
                     resultString = $"{resultString}{matchSet.PlayerOneScore}-{matchSet.PlayerTwoScore},";
                 }
@@ -100,13 +99,13 @@ namespace GameOn.Web.Services
         /// <summary>
         /// Adds a new Match, marked as played, and updates the rankings of each player based on who won, and their current rankings
         /// </summary>
-        /// <param name="player1">Player 1's ID</param>
-        /// <param name="player2">Player 2's ID</param>
+        /// <param name="team1">Team 1's ID</param>
+        /// <param name="team2">Team 2's ID</param>
         /// <param name="matchSets">The sets played</param>
         /// <returns>A Match entity expressing the results of the match</returns>
-        public async Task<Match> Played(int player1, int player2, IList<MatchSet> matchSets)
+        public async Task<Match> Played(int team1, int team2, IList<MatchSet> matchSets)
         {
-            var match = await AddMatch(DateTime.Now, player1, player2, matchSets);
+            var match = await AddMatch(DateTime.Now, team1, team2, matchSets);
             //match = _gameOnContext.Matches
             //                      .Include(x => x.WinnerPlayer)
             //                      .Include(x => x.LoserPlayer)
@@ -115,32 +114,32 @@ namespace GameOn.Web.Services
             //                      .First(x => x.Id == match.Id);
 
             // Get current leader
-            var leader = await _playerService.GetTopRankingPlayer();
+            var leader = await _teamService.GetTopRankingTeam(match.TeamOne.IsDouble);
 
             // Calculate new rankings
             _ratingHelper.UpdateMatchPlayersRanks(match);
             await _gameOnContext.SaveChangesAsync();
 
-            await SaveRankHistory(match.PlayerOne);
-            await SaveRankHistory(match.PlayerTwo);
+            await SaveRankHistory(match.TeamOne);
+            await SaveRankHistory(match.TeamTwo);
 
             // timeline the match
-            _timelineService.AddMessage($"{match.WinnerPlayer.Name} beat {match.LoserPlayer.Name} ({match.FinishScore})");
+            _timelineService.AddMessage($"{match.WinnerTeam.Name} beat {match.LoserTeam.Name} ({match.FinishScore})");
 
             // check if leader has changed, if so add to timeline
-            var newLeader = await _playerService.GetTopRankingPlayer();
+            var newLeader = await _teamService.GetTopRankingTeam(match.TeamOne.IsDouble);
 
             if (leader != newLeader)
             {
-                _timelineService.AddMessage($"{match.WinnerPlayer.Name} has replaced {leader.Name} as the new top ranking player with a rating of {match.WinnerPlayer.CurrentRank}!");
+                _timelineService.AddMessage($"{match.WinnerTeam.Name} has replaced {leader.Name} as the new top ranking team with a rating of {match.WinnerTeam.CurrentRank}!");
             }
 
             return match;
         }
 
-        private async Task SaveRankHistory(Player player)
+        private async Task SaveRankHistory(Team team)
         {
-            await _rankHistoryLoggingService.SaveRankHistory(player);
+            await _rankHistoryLoggingService.SaveRankHistory(team);
         }
     }
 }

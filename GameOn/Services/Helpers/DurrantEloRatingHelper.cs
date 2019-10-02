@@ -17,15 +17,15 @@ namespace GameOn.Web.Services.Helpers
         /// <param name="match">The Match to update</param>
         public void UpdateMatchPlayersRanks(Match match)
         {
-            double currentRating1 = match.PlayerOne.CurrentRank;
-            double currentRating2 = match.PlayerTwo.CurrentRank;
+            double currentRating1 = match.TeamOne.CurrentRank;
+            double currentRating2 = match.TeamTwo.CurrentRank;
 
             double finalResult1;
             double finalResult2;
 
             double e;
 
-            if (match.WinnerPlayerId == match.PlayerOneId)
+            if (match.WinnerTeamId == match.TeamOneId)
             {
                 e = 120 - Math.Round(1 / (1 + Math.Pow(10, ((currentRating2 - currentRating1) / 400))) * 120);
                 finalResult1 = currentRating1 + e;
@@ -38,8 +38,8 @@ namespace GameOn.Web.Services.Helpers
                 finalResult2 = currentRating2 + e;
             }
 
-            match.PlayerOne.CurrentRank = (int)finalResult1;
-            match.PlayerTwo.CurrentRank = (int)finalResult2;
+            match.TeamOne.CurrentRank = (int)finalResult1;
+            match.TeamTwo.CurrentRank = (int)finalResult2;
         }
     }
 }

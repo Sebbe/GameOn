@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace GameOn.Web.Entities
 {
-    public class TournamentPlayer
+    public class TournamentTeam
     {
         public         int        TournamentId { get; set; }
         public virtual Tournament Tournament   { get; set; }
-        public         int        PlayerId     { get; set; }
-        public virtual Player     Player       { get; set; }
+        public         int        TeamId     { get; set; }
+        public virtual Team     Team       { get; set; }
     }
 }

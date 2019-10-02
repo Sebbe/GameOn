@@ -17,7 +17,7 @@ namespace GameOn.Web.Entities
         public virtual Tournament Tournament { get; set; }
 
         //[InverseProperty("TournamentGroup")]
-        public ICollection<TournamentGroupPlayer> Players { get; set; }
+        public ICollection<TournamentGroupTeam> Teams { get; set; }
 
         [InverseProperty("TournamentGroup")]
         public ICollection<Match> Matches { get; set; }

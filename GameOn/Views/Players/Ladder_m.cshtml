@@ -1,4 +1,4 @@
-﻿@model IList<GameOn.Web.Models.PlayerMatchesSummary>
+﻿@model IList<GameOn.Web.Models.TeamMatchesSummary>
 @{
     Layout = "../Shared/_Layout_m.cshtml";
 }
@@ -24,9 +24,9 @@
             foreach (var summary in Model.Where(s=>s.Played > 0))
             {
                 rankNumber++;
-                var player = summary.Player;
+                var team = summary.Team;
 
-                <li data-role="list-divider"><a href="/Matches/?playerid=@player.Id">#@rankNumber @player.Name <small>(@player.CurrentRank)</small> <span class="sparkline" data-playerid="@player.Id"></span></a></li>
+                <li data-role="list-divider"><a href="/Matches/?teamid=@team.Id">#@rankNumber @team.Name <small>(@team.CurrentRank)</small> <span class="sparkline" data-playerid="@team.Id"></span></a></li>
                 <li>
                     <table class="summary">
                         <tr>

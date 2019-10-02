@@ -26,28 +26,28 @@ namespace GameOn.Web.Entities
         public string    Name      { get; set; }
         public string FinishScore { get; set; }
 
-        public int? PlayerOneId { get; set; }
+        public int? TeamOneId { get; set; }
 
-        [ForeignKey("PlayerOneId")]
-        public virtual Player PlayerOne { get; set; }
+        [ForeignKey("TeamOneId")]
+        public virtual Team TeamOne { get; set; }
 
         public int? PlayerTwoId { get; set; }
 
-        [ForeignKey("PlayerTwoId")]
-        public virtual Player PlayerTwo { get; set; }
+        [ForeignKey("TeamTwoId")]
+        public virtual Team TeamTwo { get; set; }
 
         [InverseProperty("Match")]
         public ICollection<MatchSet> Sets { get; set; }
 
-        public int? WinnerPlayerId { get; set; }
+        public int? WinnerTeamId { get; set; }
 
-        [ForeignKey("WinnerPlayerId")]
-        public virtual Player WinnerPlayer { get; set; }
+        [ForeignKey("WinnerTeamId")]
+        public virtual Team WinnerTeam { get; set; }
 
-        public int? LoserPlayerId { get; set; }
+        public int? LoserTeamId { get; set; }
 
-        [ForeignKey("LoserPlayerId")]
-        public virtual Player LoserPlayer { get; set; }
+        [ForeignKey("LoserTeamId")]
+        public virtual Team LoserTeam { get; set; }
 
         public int? TournamentId { get; set; }
 

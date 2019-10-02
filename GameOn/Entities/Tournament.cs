@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GameOn.Web.Entities
 {
@@ -27,7 +24,7 @@ namespace GameOn.Web.Entities
         public ICollection<TournamentMatchSchedule> Schedules { get; set; }
 
         //[InverseProperty("Tournament")]
-        public ICollection<TournamentPlayer> Players   { get; set; }
+        public ICollection<TournamentTeam> Teams   { get; set; }
 
         [InverseProperty("Tournament")]
         public ICollection<Match> Matches { get; set; }

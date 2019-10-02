@@ -13,11 +13,11 @@ namespace GameOn.Web.Controllers
     /// </summary>
     public class PlayersController : Controller
     {
-        private readonly IPlayerService _playerService;
+        private readonly ITeamService _teamService;
 
-        public PlayersController(IPlayerService playerService)
+        public PlayersController(ITeamService playerService)
         {
-            _playerService = playerService;
+            _teamService = playerService;
         }
 
 
@@ -25,9 +25,9 @@ namespace GameOn.Web.Controllers
         /// Returns a list of Players in order of their place on the ladder
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Ladder()
+        public async Task<IActionResult> Ladder(bool isDouble = false)
         {
-            ViewData.Model = await _playerService.GetListOfPlayersWithMatchSummaries();
+            ViewData.Model = await _teamService.GetListOfTeamsWithMatchSummaries(isDouble);
             return View("Ladder_m");
         }
 
@@ -35,9 +35,9 @@ namespace GameOn.Web.Controllers
         /// Gets Player's details and match summaries as CSV
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetPlayersCsv()
+        public async Task<IActionResult> GetPlayersCsv(bool isDouble = false)
         {
-            var playersCsv = await _playerService.GetListOfPlayersWithMatchSummaries();
+            var playersCsv = await _teamService.GetListOfTeamsWithMatchSummaries(isDouble);
 
             await using MemoryStream stream = new MemoryStream();
             await using StreamWriter writeFile = new StreamWriter(stream);
@@ -55,16 +55,16 @@ namespace GameOn.Web.Controllers
         /// </summary>
         /// <returns>Sparklines data as JSON</returns>
         [HttpGet]
-        public IActionResult GetSparklinesData(int? playerId)
+        public IActionResult GetSparklinesData(int? teamId)
         {
             IList<Tuple<int, string>> data;
-            if (playerId.HasValue)
+            if (teamId.HasValue)
             {
-                data = new List<Tuple<int, string>> {_playerService.GetRankHistoryDataForSparkLine(playerId.Value)};
+                data = new List<Tuple<int, string>> {_teamService.GetRankHistoryDataForSparkLine(teamId.Value)};
             }
             else
             {
-                data = _playerService.GetRankHistoryDataForSparkLine();
+                data = _teamService.GetRankHistoryDataForSparkLine();
             }
 
             return new JsonResult(data);

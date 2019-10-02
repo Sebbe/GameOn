@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GameOn.Web.Entities;
 using GameOn.Web.Services;
 using GameOn.Web.Services.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-namespace GameOn
+namespace GameOn.Web
 {
     public class Startup
     {
@@ -39,10 +35,15 @@ namespace GameOn
             services.AddScoped<IMatchResultEntryService, MatchResultEntryService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IPlayerRegistrationService, PlayerRegistrationService>();
-            services.AddScoped<IPlayerService, PlayerService>();
+            services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IRankHistoryLoggingService, RankHistoryLoggingService>();
             services.AddScoped<ITimelineService, TimelineService>();
             services.AddScoped<IRatingHelper, DurrantEloRatingHelper>();
+
+            services.AddIdentity<Player, IdentityRole>()
+                    .AddEntityFrameworkStores<GameOnContext>()
+                    .AddDefaultUI(UIFramework.Bootstrap4)
+                    .AddDefaultTokenProviders();
 
             services.AddControllersWithViews()
                 .AddNewtonsoftJson();

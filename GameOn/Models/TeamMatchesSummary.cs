@@ -5,12 +5,12 @@ namespace GameOn.Web.Models
     /// <summary>
     /// Used to display a summary of all of the matches that a Player has played, for all time.
     /// </summary>
-    public class PlayerMatchesSummary
+    public class TeamMatchesSummary
     {
         /// <summary>
-        /// The Player for this summary
+        /// The Team for this summary
         /// </summary>
-        public Player Player { get; set; }
+        public Team Team { get; set; }
         
         /// <summary>
         /// The number of matches this.Player has played
@@ -25,10 +25,7 @@ namespace GameOn.Web.Models
         /// <summary>
         /// The number of matches this.Player has lost
         /// </summary>
-        public int Lost
-        {
-            get { return Played - Won; }
-        }
+        public int Lost => Played - Won;
 
         /// <summary>
         /// The highest ranking that this player has held

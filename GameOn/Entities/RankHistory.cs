@@ -9,10 +9,11 @@ namespace GameOn.Web.Entities
         [Key]
         public int Id { get; set; }
 
-        public         DateTime Date     { get; set; }
-        public         int      Rank     { get; set; }
-        public         int      PlayerId { get; set; }
-        [ForeignKey("PlayerId")]
-        public virtual Player   Player   { get; set; }
+        public DateTime Date   { get; set; }
+        public int      Rank   { get; set; }
+        public int      TeamId { get; set; }
+
+        [ForeignKey("TeamId")]
+        public virtual Team Team { get; set; }
     }
 }

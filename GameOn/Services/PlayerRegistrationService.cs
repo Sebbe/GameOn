@@ -25,8 +25,12 @@ namespace GameOn.Web.Services
         {
             if (player.Id != 0) throw new InvalidOperationException("Don't use the AddPlayer method to update a player. Use EditPlayer instead");
             await _gameOnContext.Players.AddAsync(player);
+            var newTeam = new Team();
+            newTeam.CurrentRank = 1000;
+            newTeam.IsDouble = false;
+            newTeam.Name = player.Name;
 
-            var rankHistory = new RankHistory {Player = player, Rank = player.CurrentRank, Date = DateTime.Now};
+            var rankHistory = new RankHistory {Team = newTeam, Rank = newTeam.CurrentRank, Date = DateTime.Now};
             await _gameOnContext.RankHistory.AddAsync(rankHistory);
 
             await _gameOnContext.SaveChangesAsync();

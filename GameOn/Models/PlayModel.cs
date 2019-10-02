@@ -8,13 +8,13 @@ namespace GameOn.Web.Models
     public class PlayModel
     {
         /// <summary>
-        /// Player 1
+        /// Team 1
         /// </summary>
-        public Player Player1 { get; set; }
+        public Team Team1 { get; set; }
 
         /// <summary>
-        /// Player 2
+        /// Team 2
         /// </summary>
-        public Player Player2 { get; set; }
+        public Team Team2 { get; set; }
     }
 }

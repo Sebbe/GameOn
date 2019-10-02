@@ -1,35 +1,35 @@
-﻿@model List<GameOn.Web.Entities.Player>
+﻿@model List<GameOn.Web.Entities.Team>
 @{
     Layout = "~/Views/Shared/_Layout_m.cshtml";
 }
 
 <div data-role="header">
-    @if (ViewBag.Player1 == null)
+    @if (ViewBag.Team1 == null)
     {
         <h1>Player 1</h1>    
     }
     else
     {
-        var player = Model.First(p => p.Id == ViewBag.Player1);
+        var team = Model.First(p => p.Id == ViewBag.Team1);
         
-        <h1>@player.Name <small>(@player.CurrentRank)</small> vs</h1>
+        <h1>@team.Name <small>(@team.CurrentRank)</small> vs</h1>
     }
     <partial name="_Menu"/>
 </div>
 
 <div data-role="content">	
     <ol data-role="listview" data-inset="true" data-filter="true">
-        @foreach (var player in Model)
+        @foreach (var team in Model)
         {
             if (ViewBag.Player1 == null)
             {
-                <li><a href="/Matches/New?player1=@player.Id" data-transition="slide">@player.Name <small>(@player.CurrentRank)</small></a></li>     
+                <li><a href="/Matches/New?team1=@team.Id" data-transition="slide">@team.Name <small>(@team.CurrentRank)</small></a></li>     
             }
             else
             {
-                if (player.Id != ViewBag.Player1)
+                if (team.Id != ViewBag.Player1)
                 {
-                    <li><a href="/Matches/Play?player1=@ViewBag.Player1&player2=@player.Id" data-transition="slide">@player.Name <small>(@player.CurrentRank)</small></a></li>
+                    <li><a href="/Matches/Play?team1=@ViewBag.Team1&team2=@team.Id" data-transition="slide">@team.Name <small>(@team.CurrentRank)</small></a></li>
                 }
             }
         }
@@ -42,8 +42,8 @@
     </script>    
 
     <form id="NewPlayerForm" asp-action="New" asp-controller="Matches" method="POST" data-transformation="slide">
-        <input type="hidden" name="Player1" value="@ViewBag.Player1"/>
-        <input name="PlayerName" placeholder="New player" class="required" /><button>Go</button>  
+        <input type="hidden" name="Team1" value="@ViewBag.Team1"/>
+        <input name="TeamName" placeholder="New team" class="required" /><button>Go</button>  
     </form>
 
 </div>
